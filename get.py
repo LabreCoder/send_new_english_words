@@ -5,7 +5,7 @@ def get_last_id():
     try:
         cursor.execute("""
             SELECT id
-            FROM smtp_setting
+            FROM words
             ORDER BY id DESC
             LIMIT 1
         """)

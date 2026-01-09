@@ -4,6 +4,8 @@ import email.message
 from dotenv import load_dotenv
 from get import get_last_id
 from insert import insert_new_word
+from get_word import get_random_word
+from get_phrase import get_definition
 
 def main():
     print('🔹 Iniciando teste...')
@@ -21,7 +23,6 @@ def main():
     # Teste 2 — Banco
     try:
         id = get_last_id()
-        print(type(id))
         int_id = int(id) + 1
         print(f'✅ Banco OK — ID retornado: {int_id}')
     except Exception as e:
@@ -33,23 +34,40 @@ def main():
     receiver_email = 'jvlabremachado@id.uff.br'
     subject = f'Palavras novas em inglês para você aprender - Dia {int_id}'
 
-    word = 'Awesome'
-    body = f'''
-        Olá, estamos aprendendo a palavra id: {int_id}# !!
-        
-        Aqui está a nova palavra do dia: {word} 🥳🥳🥳
+    word = get_random_word()
+    results = get_definition(word)
+    definitions_text = ""
+    examples_text = ""
 
-        Ela significa "incrível", "fantástico" ou "impressionante".
+    for i, (definition, example) in enumerate(results, start=1):
+        if i != 1:
+            definitions_text += f"                      Definition {i}: {definition}\n"
+            examples_text += f"                      Example {i}: {example}\n"
+        else:
+            definitions_text += f"          Definition {i}: {definition}\n"
+            examples_text += f"          Example {i}: {example}\n"
 
-        Exemplo de uso:
+    body = f"""
+        Hello, we are learning word ID: {int_id}#!!
 
-                That movie was awesome! I loved it.
-                Tradução: Aquele filme foi incrível! Eu adorei.
-        
-        Continue aprendendo e se divertindo! 🚀📚
-        '''
+        Here is the new word of the day: {word} 🥳🥳🥳
+
+        It means:
+
+            {definitions_text}
+
+        Examples of usage:
+
+            {examples_text}
+
+        Keep learning and have fun! 🚀📚
+    """
+    for i in range(len(results)):
+        j = 0
+        insert_new_word(word, results[i][j], results[i][j + 1])
 
     # Teste 3 — SMTP + envio
+    
     try:
         msg = email.message.EmailMessage()
         msg['From'] = sender_email
@@ -63,8 +81,7 @@ def main():
             smtp.send_message(msg)
 
         print('📧 E-mail enviado com sucesso!')
-        insert_new_word(word, 'teste de frase')
-
+        
     except smtplib.SMTPAuthenticationError:
         print('❌ Falha de autenticação: verifique App Password do Gmail')
 
