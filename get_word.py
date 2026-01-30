@@ -1,5 +1,4 @@
 import requests
-import sys
 
 def get_random_word():
     url = "https://random-word-api.herokuapp.com/word"
