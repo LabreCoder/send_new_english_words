@@ -4,7 +4,7 @@ def get_last_id():
     conn, cursor = connect_sql()
     try:
         cursor.execute("""
-            SELECT id
+            SELECT COUNT(*)
             FROM words
             ORDER BY id DESC
             LIMIT 1
@@ -14,6 +14,19 @@ def get_last_id():
     finally:
         disconnect_sql(conn)
 
+def check_word(word):
+    conn, cursos = connect_sql()
+    try:
+        cursos.execute("""
+            SELECT word
+            FROM words
+            WHERE word = ?
+        """, (word,))
+        row = cursos.fetchone()
+        return True if row else False
+    finally:
+        disconnect_sql(conn)
+        
 def connect_sql():
     # Conectar ao banco
     conn = sqlite3.connect('./database/data/database.db')
